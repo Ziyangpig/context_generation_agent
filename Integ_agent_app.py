@@ -4,8 +4,9 @@ from dashscope import Application
 # 配置api key
 
 from dashscope import Assistants, Threads, Runs
-from spyder import crawl_hot_content
+from spyder import Weibo_spyder
 
+from PostTimeRecomend import post_time_recom_main
 import json
 def validate_json_keys(data):
     """
@@ -139,16 +140,27 @@ def content_generator(query: str) -> str:
     else:
         print(response.output.text)
 if __name__ == '__main__':
-    os.environ['DASHSCOPE_API_KEY'] = # 申请阿里云api key
-   
-    ans = topic_determine_assistant('你好，我对王者荣耀角色老夫子的新皮肤文案创作感兴趣')
-    ans = strict_json_validator(ans)
-    if 'game' in ans and 'type' in  ans and 'topic' in ans:
-        print('爬取相关高热文案中...')
-        #gamehot_contents = crawl_hot_content(**ans, num=5)
-        print('文案生成中...')
-        content_generator(ans['type']+ans['topic'])
+    with open('api_key.txt', 'r', encoding='utf-8') as f:
+        for line in f:
+            api, key=line.strip()
+            os.environ[api] = key
+    
+    print(api,key)
+    # ans = topic_determine_assistant('你好，我对王者荣耀角色老夫子的新皮肤文案创作感兴趣')
+    # ans = strict_json_validator(ans)
+    # if 'game' in ans and 'type' in  ans and 'topic' in ans:
+    #     print('爬取相关高热文案中...')
+    #     # spy = Weibo_spyder
+    #     # gamehot_contents = spy.crawl_hot_content(ans['topic'], num=5)
+    #     print('文案生成中...')
+    #     content_generator(ans['type']+ans['topic'])
+    #     # 用户活跃时段热力图与最佳发布时间推荐
+    #     print('活跃时段热力图生成中...')
+    #     # 爬取最新微博文案，更新数据库
+    #     # df_new = spy.crawl_new_content()
+    #     # TODO:读取数据库，更新df_new
+    #     post_time_recom_main()
         
-    else:
-        print(ans)
+        
+
     
