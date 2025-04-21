@@ -121,7 +121,7 @@ class Weibo_spyder:
         'comments': int
         '''
         df = DataFrame()
-        return df
+        return self.content
     
 ## 以下不管
 wei = Weibo_spyder('无畏契约', '2025-04-15')
