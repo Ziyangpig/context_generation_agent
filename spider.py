@@ -11,7 +11,7 @@ import pandas as pd
 from datetime import datetime
 import requests
 from bs4 import BeautifulSoup
-
+from pathlib import Path
 from pandas import DataFrame
 import os
 
@@ -32,9 +32,9 @@ class Weibo_spyder:
         '''
 
         # 1. 路径设置
-        original_config_path = "/Users/georgetam/Downloads/weiboSpider-master/config.json"
+        original_config_path = "config.json"
         temp_config_path = f"/tmp/temp_config_{uuid.uuid4().hex}.json"
-        project_dir = "/Users/georgetam/Desktop/3.3/"
+        project_dir = Path(__file__).parent.absolute()
         output_dir = os.path.join(project_dir,'weibo', self.game)
 
         # 2. 检查参数
