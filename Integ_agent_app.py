@@ -1,12 +1,18 @@
+'''
+author: Ziyang Zhu
+date: 2024-04-22
+'''
 import os
 from http import HTTPStatus
-from dashscope import Application
-# 配置api key
+from dashscope import Application,Assistants, Threads, Runs
 
-from dashscope import Assistants, Threads, Runs
+from datetime import datetime, timedelta
+
 from spyder import Weibo_spyder
+from PostTimeRecomend import PostTimeRecomend
 
-from PostTimeRecomend import post_time_recom_main
+
+
 import json
 def validate_json_keys(data):
     """
@@ -124,13 +130,15 @@ def topic_determine_assistant(query):
     return ans
 
 
-def content_generator(query: str) -> str:
+def content_generator(query: str, biz_params: dict) -> str:
 
     response = Application.call(
         
         api_key=os.getenv("DASHSCOPE_API_KEY"),
-        app_id='a5ebdbae5a6448d1a4fb0df72b3ec787',# 替换为实际的应用 ID
-        prompt=query)
+        app_id='2ae5b8c39d4040f5ad2b8caf5deda35f',# 替换为实际的应用 ID 
+        prompt=query,
+        biz_params=biz_params)
+    
 
     if response.status_code != HTTPStatus.OK:
         print(f'request_id={response.request_id}')
@@ -139,27 +147,44 @@ def content_generator(query: str) -> str:
         print(f'请参考文档：https://help.aliyun.com/zh/model-studio/developer-reference/error-code')
     else:
         print(response.output.text)
+        
 if __name__ == '__main__':
     with open('api_key.txt', 'r', encoding='utf-8') as f:
         for line in f:
-            api, key=line.strip()
+            api, key=line.strip().split('=')
             os.environ[api] = key
     
-    print(api,key)
-    # ans = topic_determine_assistant('你好，我对王者荣耀角色老夫子的新皮肤文案创作感兴趣')
-    # ans = strict_json_validator(ans)
-    # if 'game' in ans and 'type' in  ans and 'topic' in ans:
-    #     print('爬取相关高热文案中...')
-    #     # spy = Weibo_spyder
-    #     # gamehot_contents = spy.crawl_hot_content(ans['topic'], num=5)
-    #     print('文案生成中...')
-    #     content_generator(ans['type']+ans['topic'])
-    #     # 用户活跃时段热力图与最佳发布时间推荐
-    #     print('活跃时段热力图生成中...')
-    #     # 爬取最新微博文案，更新数据库
-    #     # df_new = spy.crawl_new_content()
-    #     # TODO:读取数据库，更新df_new
-    #     post_time_recom_main()
+    # print(api,key)
+    query = '你好，我对王者荣耀角色老夫子的新皮肤文案创作感兴趣'
+    ans = topic_determine_assistant(query)
+    ans = strict_json_validator(ans)
+    if 'game' in ans and 'type' in  ans and 'topic' in ans:
+        print('爬取相关高热文案中...')
+        
+        last_week_date = (datetime.now() - timedelta(weeks=1)).strftime('%Y-%m-%d')
+        print(last_week_date)
+        wei = Weibo_spyder('王者荣耀', last_week_date)
+        wei.unify_crawl()
+        # topic参数待实现
+        res = wei.crawl_hot_content('角色皮肤', num=3)
+        print(res[0:100],'...')
+        print('文案生成中...')
+        print(ans['type'],ans['topic'])
+        
+        biz_params = {"game": ans['game'], "topic": ans['topic'], "hot_content_related": res}
+        # ret_content = content_generator(query,biz_params)
+        # with open('ret_content.txt', 'r', encoding='utf-8') as f:
+        #     f.write(query)
+        #     f.write(ret_content)
+        # 用户活跃时段热力图与最佳发布时间推荐
+        print('活跃时段热力图生成中...')
+        # 爬取最新微博文案，更新数据库
+        # 默认返回近1500条数据
+        processed_df = wei.crawl_new_content()
+        # print(processed_df.shape)
+        PTR = PostTimeRecomend(processed_df)
+        
+        PTR.post_time_recom_main()
         
         
 
