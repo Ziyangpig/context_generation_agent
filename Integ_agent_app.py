@@ -172,10 +172,10 @@ if __name__ == '__main__':
         print(ans['type'],ans['topic'])
         
         biz_params = {"game": ans['game'], "topic": ans['topic'], "hot_content_related": res}
-        # ret_content = content_generator(query,biz_params)
-        # with open('ret_content.txt', 'r', encoding='utf-8') as f:
-        #     f.write(query)
-        #     f.write(ret_content)
+        ret_content = content_generator(query,biz_params)
+        with open('ret_content.txt', 'r', encoding='utf-8') as f:
+            f.write(query)
+            f.write(ret_content)
         # 用户活跃时段热力图与最佳发布时间推荐
         print('活跃时段热力图生成中...')
         # 爬取最新微博文案，更新数据库
