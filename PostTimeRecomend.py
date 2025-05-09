@@ -127,10 +127,11 @@ class PostTimeRecomend:
     # 可视化分析结果
     # ==============================
     def res_info(self,high_interact_df,):
-        # 创建热力图
+        # 创建时段列
+        high_interact_df['period'] = (high_interact_df['hour'] // 3) * 3
         plt.figure(figsize=(12, 6))
         pivot_table = high_interact_df.pivot_table(
-            index='hour',
+            index='period',
             columns='weekday',
             values='cluster',
             aggfunc='count',
@@ -151,10 +152,10 @@ class PostTimeRecomend:
             annot_kws={"size": 8}
         )
 
-        plt.title('High Interaction Clusters Distribution by Hour and Weekday')
+        plt.title('High Interaction Clusters Distribution by Period and Weekday',fontsize=12, fontweight='bold')
         plt.xlabel('Weekday')
-        plt.ylabel('Hour of Day')
-        plt.savefig('heatmap.png', dpi=300, bbox_inches='tight')
+        plt.ylabel('Period of Day')
+        plt.savefig('heatmap_period.png', dpi=300, bbox_inches='tight')
         # plt.show()
 
         # ======================================

@@ -147,6 +147,7 @@ def content_generator(query: str, biz_params: dict) -> str:
         print(f'请参考文档：https://help.aliyun.com/zh/model-studio/developer-reference/error-code')
     else:
         print(response.output.text)
+    return response.output.text
         
 if __name__ == '__main__':
     with open('api_key.txt', 'r', encoding='utf-8') as f:
@@ -169,15 +170,15 @@ if __name__ == '__main__':
         res = wei.crawl_hot_content('角色皮肤', num=3)
         print(res[0:100],'...')
         print('文案生成中...')
-        print(ans['type'],ans['topic'])
+        print('文案类型',ans['type'],'话题',ans['topic'])
         
         biz_params = {"game": ans['game'], "topic": ans['topic'], "hot_content_related": res}
         ret_content = content_generator(query,biz_params)
-        with open('ret_content.txt', 'r', encoding='utf-8') as f:
+        with open('ret_content.txt', 'w', encoding='utf-8') as f:
             f.write(query)
             f.write(ret_content)
         # 用户活跃时段热力图与最佳发布时间推荐
-        print('活跃时段热力图生成中...')
+        print('根据近1500条数据进行活跃时段热力图生成...')
         # 爬取最新微博文案，更新数据库
         # 默认返回近1500条数据
         processed_df = wei.crawl_new_content()
